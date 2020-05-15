@@ -1,0 +1,17 @@
+{application, ddate_iface_http,
+ [{description, "An OTP application"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {mod, {ddate_iface_http_app, []}},
+  {applications,
+   [kernel,
+    stdlib,
+    lager,
+    mochiweb
+   ]},
+  {env,[]},
+  {modules, []},
+
+  {licenses, ["Apache 2.0"]},
+  {links, []}
+ ]}.
