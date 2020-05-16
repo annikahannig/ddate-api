@@ -82,15 +82,13 @@ parse_params(Tmpl, Path) ->
 route_path(Routing, Path) ->
     % Load route that matches. Should ideally be one,
     % however, could be multiple matches - first one wins.
-    Matches = [Route || {Tmpl, _ , _} = Route <- Routing,
-                        match_path(Tmpl, Path)],
-    case Matches of
-        [{Tmpl, Handler, Opts}|_] ->
-            % Decode params from path
-            Params = ddate_iface_http_router:parse_params(Tmpl, Path),
-            {Handler, Params, Opts};
-        [] -> nil
-    end.
+    [{Tmpl, Handler, Opts}|_] = [
+        Route || {Tmpl, _ , _} = Route <- Routing,
+                 match_path(Tmpl, Path)],
+
+    % Decode params from path
+    Params = ddate_iface_http_router:parse_params(Tmpl, Path),
+    {Handler, Params, Opts}.
 
 
 -ifdef(TEST).

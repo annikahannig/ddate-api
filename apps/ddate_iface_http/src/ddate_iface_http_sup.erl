@@ -27,7 +27,7 @@ start_link() ->
 %%                  modules => modules()}   % optional
 init([]) ->
     SupFlags = #{strategy => one_for_one,
-                 intensity => 0,
+                 intensity => 5,
                  period => 1},
     ChildSpecs = [
         #{id => ddate_iface_http_server,
@@ -40,7 +40,12 @@ init([]) ->
         #{id => ddate_iface_http_h_root,
           start => {ddate_iface_http_h_root, start_link, []},
           type => worker,
-          modules => [ddate_iface_http_h_root]}
+          modules => [ddate_iface_http_h_root]},
+
+        #{id => ddate_iface_http_h_foo,
+          start => {ddate_iface_http_h_foo, start_link, []},
+          type => worker,
+          modules => [ddate_iface_http_h_foo]}
 
     ],
     {ok, {SupFlags, ChildSpecs}}.

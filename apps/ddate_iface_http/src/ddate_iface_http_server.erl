@@ -29,6 +29,7 @@ routes() -> [
      ddate_iface_http_h_api_v1_ddate, []},
     {"/hello/:username",
      ddate_iface_http_h_static, "about.html"},
+    {"/bar", ddate_iface_http_h_foo, []},
     {"/",
      ddate_iface_http_h_root, []}
 ].
@@ -51,6 +52,11 @@ encode_response({ok, Body}, Req) ->
 encode_response({not_found, Body}, Req) ->
     encode_response({404, Body, []}, Req);
 
+encode_response({method_not_allowed, Method}, Req) ->
+    Body = "The method '" ++ erlang:atom_to_list(Method) ++
+        "' is not allowed.",
+    encode_response({405, Body, []}, Req);
+
 encode_response({error, Body}, Req) ->
     encode_response({500, Body, []}, Req).
 
@@ -59,12 +65,10 @@ encode_response({error, Body}, Req) ->
 % Handle Errors / Create error responses
 %
 
-handle_error({not_found, Path}) ->
+handle_error({not_found, Path}, _Stacktrace) ->
     {not_found, {text, "The resource `" ++ Path ++ "` does not exist."}};
 
-handle_error(Reason) ->
-    lager:error("Something bad happened."),
-    lager:error("Reason: ~p", [Reason]),
+handle_error(Reason, Stacktrace) ->
     {error, {text, "something went wrong..."}}.
     
 
@@ -76,32 +80,33 @@ handle_request(Req) ->
 
     % Log Request
     lager:info("~s ~s ~p from ~s",[Method, Path, Query, Peer]),
-
-    Response = case ddate_iface_http_router:route_path(routes(), Path) of
-        % Route found: 
+    
+    % Route request
+    Response = try ddate_iface_http_router:route_path(routes(), Path) of
         {Handler, Params, Opts} ->
+            % Pass request to handler, encode the response
             try Handler:handle_request(Req, Params, Opts)
-            catch
-                _:Reason ->
-                    % Something went wrong wile handling this request.
-                    % We pass this to our error handler and generate
-                    % an error response
-                    handle_error(Reason)
-            end;
-        % No route found
-        _ ->
-            handle_error({not_found, Path})
+            % Something happened while processing the response
+            catch Class:Reason:Stacktrace -> 
+                % Log stacktrace
+                lager:error(
+                    "~nStacktrace:~s",
+                    [lager:pr_stacktrace(Stacktrace, {Class, Reason})]),
+                % Generate response
+                handle_error(Reason, Stacktrace)
+            end
+    % Routing the request failed.
+    catch error:_ -> handle_error({not_found, Path}, [])
     end,
 
-    % Encode response: Set content type, header, status code,
-    % and so on dependent on the result.
+    % Respond to the request 
     encode_response(Response, Req).
 
+            
 
 %%---------------------------------------------------------
 %% Tests
 %%---------------------------------------------------------
-
 
 -ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
