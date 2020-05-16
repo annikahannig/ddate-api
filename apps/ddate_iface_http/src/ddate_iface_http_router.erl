@@ -27,7 +27,7 @@ variable(V) ->
 % Empty or root
 compare_path_parts([], []) -> true;
 
-compare_path_parts([], _) -> true; % Partial match
+compare_path_parts([], _) -> false; % No partial matches
 
 compare_path_parts(_, []) -> false; % Can't match
 
@@ -82,14 +82,15 @@ parse_params(Tmpl, Path) ->
 route_path(Routing, Path) ->
     % Load route that matches. Should ideally be one,
     % however, could be multiple matches - first one wins.
-    [{Tmpl, Handler, Opts}|_] = [
-        Route || {Tmpl, _ , _} = Route <- Routing, match_path(Tmpl, Path)],
-
-    % Decode params from path
-    Params = ddate_iface_http_router:parse_params(Tmpl, Path),
-
-    % Result
-    {Handler, Params, Opts}.
+    Matches = [Route || {Tmpl, _ , _} = Route <- Routing,
+                        match_path(Tmpl, Path)],
+    case Matches of
+        [{Tmpl, Handler, Opts}|_] ->
+            % Decode params from path
+            Params = ddate_iface_http_router:parse_params(Tmpl, Path),
+            {Handler, Params, Opts};
+        [] -> nil
+    end.
 
 
 -ifdef(TEST).
