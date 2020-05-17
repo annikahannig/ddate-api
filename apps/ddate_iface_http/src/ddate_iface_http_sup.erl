@@ -37,10 +37,10 @@ init([]) ->
         %
         % Handlers
         %
-        #{id => ddate_iface_http_h_root,
-          start => {ddate_iface_http_h_root, start_link, []},
+        #{id => ddate_iface_http_h_ddate,
+          start => {ddate_iface_http_h_ddate, start_link, []},
           type => worker,
-          modules => [ddate_iface_http_h_root]},
+          modules => [ddate_iface_http_h_ddate]},
 
         #{id => ddate_iface_http_h_foo,
           start => {ddate_iface_http_h_foo, start_link, []},

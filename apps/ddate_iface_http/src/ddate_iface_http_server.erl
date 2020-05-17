@@ -25,15 +25,20 @@ start_link() ->
 
 
 routes() -> [
-    {"/api/v1/ddate",
-     ddate_iface_http_h_api_v1_ddate, []},
-    {"/hello/:username",
-     ddate_iface_http_h_static, "about.html"},
     {"/bar", ddate_iface_http_h_foo, []},
-    {"/",
-     ddate_iface_http_h_root, []}
+
+    {"/api/v1/ddate",  ddate_iface_http_h_api_v1, []},
+
+    {"/:year/:month/:day", ddate_iface_http_h_ddate, []},
+
+    {"/", ddate_iface_http_h_ddate, []}
 ].
 
+
+
+%%---------------------------------------------------------
+%% Response Encoding
+%%---------------------------------------------------------
 
 encode_response({Status, {text, Text}, Headers}, Req) ->
     DefaultHeaders = [{"Content-type", "text/plain"}],
@@ -42,6 +47,10 @@ encode_response({Status, {text, Text}, Headers}, Req) ->
 encode_response({Status, {html, Body}, Headers}, Req) ->
     DefaultHeaders = [{"Content-type", "text/html"}],
     mochiweb_request:respond({Status, DefaultHeaders ++ Headers, Body}, Req);
+
+encode_response({Status, {template, Tmpl, Args}}, Req) ->
+    {ok, Body} = Tmpl:render(Args),
+    encode_response({Status, {html, Body}}, Req);
 
 encode_response({Status, Body, Headers}, Req) ->
     encode_response({Status, {html, Body}, Headers}, Req);
