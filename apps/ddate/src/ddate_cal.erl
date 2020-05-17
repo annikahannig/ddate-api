@@ -52,15 +52,15 @@ handle_call({date_to_ddate, Date, TextFormat}, _From, State) ->
     % Create ddate response 
     Response = #{
         yold => Yold,
-        season => ddatee:format(":season:", Ddate),
+        season => list_to_binary(ddatee:format(":season:", Ddate)),
         day => Day,
-        day_suffix => ddatee:format(":day_suffix:", Ddate),
-        weekday => ddatee:format(":weekday:", Ddate),
+        day_suffix => list_to_binary(ddatee:format(":day_suffix:", Ddate)),
+        weekday => list_to_binary(ddatee:format(":weekday:", Ddate)),
         celebration => case ddatee:format(":celebration:", Ddate) of
-            [] -> nil;
-            Val -> Val
+            [] -> null;
+            Val -> list_to_binary(Val)
         end,
-        text => ddatee:format(TextFormat, Ddate)},
+        text => list_to_binary(ddatee:format(TextFormat, Ddate))},
 
     {reply, Response, State}.
 
