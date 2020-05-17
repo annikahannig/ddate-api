@@ -1,52 +1,35 @@
 -module(ddate_iface_http_h_root).
 
--behaviour(gen_server).
+-behaviour(ddate_iface_http_g_resource).
 
 -export([start_link/0]).
--export([handle_request/3]).
--export([init/1, handle_call/3, handle_cast/2]).
--export([retrieve/3]).
+-export([handle_request/3, handle_method/3]).
 
 -define(SERVER, ?MODULE).
 
+
 start_link() ->
-    gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
+    % Compile templates
+    {ok, _} = erlydtl:compile_file(
+        code:priv_dir(ddate_iface_http) ++
+        "/templates/index.html", ddate_tmpl_index),
 
-
-init(_Args) ->
-    {ok, []}.
-
-%%---------------------------------------------------------
-%% Interface functions 
-%%---------------------------------------------------------
+    ddate_iface_http_g_resource:start_link({local, ?SERVER}, ?MODULE).
 
 handle_request(Req, Params, Opts) ->
-    gen_server:call(?SERVER, {request, Req, Params, Opts}).
-
+    % Dispatch
+    ddate_iface_http_g_resource:handle_request(?SERVER, Req, Params, Opts).
 
 
 %%---------------------------------------------------------
 % Callbacks
 %%---------------------------------------------------------
 
-retrieve(_Req, Params, Opts) ->
-    {ok, {text, "heeej!"}}.
+handle_method('GET', _Req, _Params) ->
+    Today = ddate_cal:today(),
+    {ok, Body} = ddate_tmpl_index:render([
+        {today, Today}
+    ]),
+    {ok, {html, Body}}.
 
-
-
-%%---------------------------------------------------------
-%% Server
-%%---------------------------------------------------------
-
-% Process request
-handle_call({request, Req, Params, Opts}, _From, State) ->
-    % Todo: Invoke callbak in resource behaviour 
-    Response = case mochiweb_request:get(method, Req) of
-        'GET' -> ?MODULE:retrieve(Req, Params, Opts);
-        M -> io:format("~p~n", [M]), {ok, {plain, "Wat?"}}
-    end,
-
-    {reply, Response, State}.
-
-handle_cast(_, State) -> {noreply, State}.
 

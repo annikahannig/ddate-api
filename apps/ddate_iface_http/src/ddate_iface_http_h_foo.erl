@@ -9,6 +9,7 @@
 
 
 start_link() ->
+    % Start server
     ddate_iface_http_g_resource:start_link({local, ?SERVER}, ?MODULE).
 
 
@@ -21,7 +22,11 @@ handle_request(Req, Params, Opts) ->
 
 
 handle_method('GET', Req, Params) ->
-    {ok, {html, "<b>ohai!</b> nice to see you!</b>"}};
+    Today = ddate_cal:today(),
+    {ok, Body} = ddate_tmpl_index:render([
+        {today, maps:to_list(Today)}
+    ]),
+    {ok, {html, Body}};
 
 
 handle_method('POST', Req, Params) ->
