@@ -42,10 +42,10 @@ init([]) ->
           type => worker,
           modules => [ddate_iface_http_h_ddate]},
 
-        #{id => ddate_iface_http_h_foo,
-          start => {ddate_iface_http_h_foo, start_link, []},
+        #{id => ddate_iface_http_h_api_v1,
+          start => {ddate_iface_http_h_api_v1, start_link, []},
           type => worker,
-          modules => [ddate_iface_http_h_foo]}
+          modules => [ddate_iface_http_h_api_v1]}
 
     ],
     {ok, {SupFlags, ChildSpecs}}.

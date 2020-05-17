@@ -48,10 +48,17 @@ encode_response({Status, {html, Body}, Headers}, Req) ->
     DefaultHeaders = [{"Content-type", "text/html"}],
     mochiweb_request:respond({Status, DefaultHeaders ++ Headers, Body}, Req);
 
+encode_response({Status, {json, Data}, Headers}, Req) ->
+    DefaultHeaders = [{"Content-type", "application/json"}],
+    Payload = jsone:encode(Data),
+    mochiweb_request:respond(
+        {Status, DefaultHeaders ++ Headers, Payload}, Req);
+
 encode_response({Status, {template, Tmpl, Args}}, Req) ->
     {ok, Body} = Tmpl:render(Args),
     encode_response({Status, {html, Body}}, Req);
 
+    
 encode_response({Status, Body, Headers}, Req) ->
     encode_response({Status, {html, Body}, Headers}, Req);
 

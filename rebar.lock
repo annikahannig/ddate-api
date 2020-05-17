@@ -5,12 +5,14 @@
   0},
  {<<"erlydtl">>,{pkg,<<"erlydtl">>,<<"0.13.1">>},0},
  {<<"goldrush">>,{pkg,<<"goldrush">>,<<"0.1.9">>},1},
+ {<<"jsone">>,{pkg,<<"jsone">>,<<"1.5.2">>},0},
  {<<"lager">>,{pkg,<<"lager">>,<<"3.8.0">>},0},
  {<<"mochiweb">>,{pkg,<<"mochiweb">>,<<"2.20.1">>},0}]}.
 [
 {pkg_hash,[
  {<<"erlydtl">>, <<"91481928557544C843E2B33F8AA17693F16B65EEBC9EF08C71EBE90CBD1A84F1">>},
  {<<"goldrush">>, <<"F06E5D5F1277DA5C413E84D5A2924174182FB108DABB39D5EC548B27424CD106">>},
+ {<<"jsone">>, <<"87ADEA283C9CF24767B4DEED44602989A5331156DF5D60A2660E9C9114D54046">>},
  {<<"lager">>, <<"3402B9A7E473680CA179FC2F1D827CAB88DD37DD1E6113090C6F45EF05228A1C">>},
  {<<"mochiweb">>, <<"E4DBD0ED716F076366ECF62ADA5755A844E1D95C781E8C77DF1D4114BE868CDF">>}]}
 ].
