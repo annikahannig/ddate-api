@@ -50,17 +50,17 @@ handle_call({date_to_ddate, Date, TextFormat}, _From, State) ->
     {Yold, _, Day} = Ddate,
 
     % Create ddate response 
-    Response = #ddate{
-        yold = Yold,
-        season = ddatee:format(":season:", Ddate),
-        day = Day,
-        day_suffix = ddatee:format(":day_suffix:", Ddate),
-        weekday = ddatee:format(":weekday:", Ddate),
-        celebration = case ddatee:format(":celebration:", Ddate) of
+    Response = #{
+        yold => Yold,
+        season => ddatee:format(":season:", Ddate),
+        day => Day,
+        day_suffix => ddatee:format(":day_suffix:", Ddate),
+        weekday => ddatee:format(":weekday:", Ddate),
+        celebration => case ddatee:format(":celebration:", Ddate) of
             [] -> nil;
             Val -> Val
         end,
-        text = ddatee:format(TextFormat, Ddate)},
+        text => ddatee:format(TextFormat, Ddate)},
 
     {reply, Response, State}.
 
