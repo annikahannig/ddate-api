@@ -71,8 +71,11 @@ parse_params(Tmpl, Path) ->
     TmplParts = string:tokens(Tmpl, "/"),
     PathParts = string:tokens(Path, "/"),
 
-    [P || P <- parse_params_(TmplParts, PathParts),
-          P =/= nil].
+    % Build map of parameters
+    maps:from_list([
+        P || P <- parse_params_(TmplParts, PathParts),
+             P =/= nil
+    ]).
 
 
 
@@ -99,7 +102,7 @@ match_path_test_() ->
     % Test path matching
     Expect = [
         {"/", "/", true},
-        {"/", "/bar", true}, % partial
+        {"/", "/bar", false},
         {"/foo", "/bar", false},
         {"/foo/bar", "/foo", false},
         {"/foo/bar", "/foo/bar", true},
@@ -114,7 +117,7 @@ match_path_test_() ->
 
 parse_params_test() ->
     Params = parse_params("/x/:a/:foo", "/x/str val/42"),
-    ?assertEqual([{a, "str val"}, {foo, "42"}], Params).
+    ?assertEqual(#{a => "str val", foo => "42"}, Params).
 
 -endif.
 
