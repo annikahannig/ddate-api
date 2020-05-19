@@ -7,7 +7,7 @@
 -export([start_link/2]).
 -export([handle_request/4]).
 
--callback handle_method(atom(), term(), term()) -> term().
+-callback handle_method(Method :: atom(), Req :: term(), Params :: term()) -> term().
 
 
 start_link(Server, Handler) ->
